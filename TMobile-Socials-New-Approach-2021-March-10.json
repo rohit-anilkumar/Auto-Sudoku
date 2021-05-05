@@ -1,0 +1,1225 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "val social_profiles = sqlContext.read.parquet(\"s3://fullcontact-exports/unified-data/data-lake/person-tables/2021/02/19/21/39/person_social_profile\").select(\"fcid\",\"query_type\",\"query_value\",\"url\").where(length(col(\"fcid\"))===32).where(col(\"query_value\").isNotNull)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:07:04+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34msocial_profiles\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [fcid: string, query_type: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=1",
+              "$$hashKey": "object:2874"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615363005185_1931567214",
+      "id": "paragraph_1615363005185_1931567214",
+      "dateCreated": "2021-03-10T07:56:45+0000",
+      "dateStarted": "2021-03-10T08:06:50+0000",
+      "dateFinished": "2021-03-10T08:07:01+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:2554"
+    },
+    {
+      "text": "\n\n\nval socials_twitter = social_profiles.select(\"fcid\",\"query_value\").where(col(\"query_type\")===\"twitter\").withColumn(\"twitter_url\", concat(lit(\"https://twitter.com/\"),social_profiles.col(\"query_value\"))).drop(\"query_value\")\nval twitter_deduped = socials_twitter.groupBy(\"fcid\").agg(collect_list(\"twitter_url\")).withColumn(\"twitter\",col(\"collect_list(twitter_url)\").getItem(0)).drop(\"collect_list(twitter_url)\")\ntwitter_deduped.show(20, truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T10:20:38+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------------------------------+-----------------------------------+\n|fcid                            |twitter                            |\n+--------------------------------+-----------------------------------+\n|000051fedb214980be3781f1a6a7c8c4|https://twitter.com/bhglove        |\n|00005c71dda84584b483b2947706fff5|https://twitter.com/imrankhedeka46 |\n|00005dc435f04cd8b87637affd79dfb6|https://twitter.com/valeriyzyryanov|\n|00007fccce5a4ae1b639dba1ddc6f89b|https://twitter.com/mrssamanthaash4|\n|0000977951ca49b88a6ddd5aafc4c8a0|https://twitter.com/davidhu62605781|\n|000097c384cb4aa7a96bac053f074b2d|https://twitter.com/babrinowest    |\n|00009b3b6ca44775a4905109f633b26b|https://twitter.com/ajeet47949131  |\n|0000a65e22bb4f30a4a960f7bdf70861|https://twitter.com/bcvevo         |\n|0000a6e201fb4cc4830b1ef3d63940bc|https://twitter.com/raulanarkopunk |\n|0000b5e4a3024696ab2cf89f33a87618|https://twitter.com/junjun_912     |\n|0000b6f2e1b84c959e3aac23a6ab423e|https://twitter.com/tropicanacr    |\n|0000e61fbdb1468eae9ec9b1f519af71|https://twitter.com/poeticlullabye |\n|00010c03c67b4875972f2b5ad76ef3b5|https://twitter.com/willsgdr       |\n|0001179e8b174be7b6506607b859b0df|https://twitter.com/lezliev        |\n|000158af390840a7ba951004585f67d1|https://twitter.com/none31982526   |\n|00016b5a9f7e4a97a9f8995eef7507ed|https://twitter.com/01hiddensecrets|\n|0001d394c2e34d6a825f98af9d32ab14|https://twitter.com/trem_marlon    |\n|0001ee964b864749ab33be20fe215040|https://twitter.com/rajeevbhagat   |\n|000204e8e3db4e95ab9d012fe7fb8f7e|https://twitter.com/sameer_556     |\n|00020ac6c2ac473ab7e922a9e37af709|https://twitter.com/0dqwim9clheivsr|\n+--------------------------------+-----------------------------------+\nonly showing top 20 rows\n\n\u001b[1m\u001b[34msocials_twitter\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter_url: string]\n\u001b[1m\u001b[34mtwitter_deduped\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter: string]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=5",
+              "$$hashKey": "object:2891"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=6",
+              "$$hashKey": "object:2892"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615363125171_-1552263230",
+      "id": "paragraph_1615363125171_-1552263230",
+      "dateCreated": "2021-03-10T07:58:45+0000",
+      "dateStarted": "2021-03-10T08:12:52+0000",
+      "dateFinished": "2021-03-10T08:13:43+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2555"
+    },
+    {
+      "text": "val socials_phone = social_profiles.select(\"fcid\",\"query_value\").where(col(\"query_type\")===\"phone\")\nval phone_deduped = socials_phone.groupBy(\"fcid\").agg(collect_list(\"query_value\")).withColumn(\"phone_1\",col(\"collect_list(query_value)\").getItem(0)).drop(\"collect_list(query_value)\")\nphone_deduped.show(20, truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:18:31+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------------------------------+-------------+\n|fcid                            |phone_1      |\n+--------------------------------+-------------+\n|0000b88643db4ecea6c7f15b0a5d0e8f|+13017171751 |\n|00013dfabfdd4c0ab98284554f2d8b9b|+12013131100 |\n|0001998e07d34077a052fd1993e83ee0|+17044308758 |\n|0001d00f661044e580f0356672452d26|+13155754692 |\n|0002b1f9383246939c6f93bfc5ef3c8e|+19253233954 |\n|0002c3d5dfc1407fac9dd429bc99966a|+13204443795 |\n|0002d16f61df44e9971fabfcee0626b1|+13104594368 |\n|0002e75f4fd040b5b8756955043bc34b|+491776116541|\n|0002f764f1204f38b6907316fbd773cb|+18457418663 |\n|0002fe0c45184413a244d36b5228f86e|+16174299640 |\n|000369cd7b254f24bf18fc2c2a516a51|+17075861303 |\n|00039196cb064a95959844db2013a43a|+19288974878 |\n|000414a5b4dc4b508994d37c0888a278|+541158523149|\n|00042588ac854f40a24e494d89b8b617|+16318390786 |\n|000436d663434a13b99e5fb59f18ca79|+14133881817 |\n|000460607fd64364b9ec7ecfb5a046d2|+17132220860 |\n|0004b1a057ea440c925df9f2fd71f781|+447789223135|\n|0005417e7a964e9191559bb17ce6a42e|+17757424005 |\n|000565096be94efeb9112fd5fc212e81|+17193105557 |\n|0005c65bcf1249e792e7a14f8cffc542|+12815138372 |\n+--------------------------------+-------------+\nonly showing top 20 rows\n\n\u001b[1m\u001b[34msocials_phone\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [fcid: string, query_value: string]\n\u001b[1m\u001b[34mphone_deduped\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, phone_1: string]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=7",
+              "$$hashKey": "object:2911"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=8",
+              "$$hashKey": "object:2912"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615363565103_-1194463686",
+      "id": "paragraph_1615363565103_-1194463686",
+      "dateCreated": "2021-03-10T08:06:05+0000",
+      "dateStarted": "2021-03-10T08:18:31+0000",
+      "dateFinished": "2021-03-10T08:19:15+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2556"
+    },
+    {
+      "text": "val socials_email = social_profiles.select(\"fcid\",\"query_value\").where(col(\"query_type\")===\"email\")\nval email_deduped = socials_email.groupBy(\"fcid\").agg(collect_list(\"query_value\")).withColumn(\"email_1\",col(\"collect_list(query_value)\").getItem(0)).drop(\"collect_list(query_value)\")\nemail_deduped.show(20, truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:19:59+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------------------------------+----------------------------+\n|fcid                            |email_1                     |\n+--------------------------------+----------------------------+\n|000051fedb214980be3781f1a6a7c8c4|bhglove@yahoo.com           |\n|00006b9d6e744f60aa76128003159493|jennifer@samsungair.co.za   |\n|0000977951ca49b88a6ddd5aafc4c8a0|suppose513@gmail.com        |\n|0000a6e201fb4cc4830b1ef3d63940bc|groverazo@hotmail.cl        |\n|0000b04bc5f6423a91bccae4eed2da85|taner_303_@hotmail.com      |\n|00013045c31745758ac87f5a82580bf3|leakeyabsalom@yahoo.com     |\n|00013dfabfdd4c0ab98284554f2d8b9b|srubinstein@dxagency.com    |\n|000177772792473cb0579d196bb61f49|cornvey1@gmail.com          |\n|00019c038cae4c2c9991cc2b46aa1869|ballao@andersenballao.com.br|\n|0001ee964b864749ab33be20fe215040|rajeev.bhagat@yahoo.com     |\n|0001f59200384f74bccd74e66c7a7a7e|carlotta.weschke@citi.com   |\n|000206df806c47d0befdced378f6553b|giovanna240@hotmail.com     |\n|0002b122eba049fbab6a0fe9d3879a71|den48rus@yandex.ru          |\n|0002b47c6a824afdbadea3c3f4bd9bc8|almurphymoreton@aol.com     |\n|0002bc60cce944c2a6bfb1c8bf93e229|hasan2722@gmail.com         |\n|0002c3d5dfc1407fac9dd429bc99966a|maribel_zelaya@hotmail.com  |\n|0002e55b302643b0aa6709bbd8937819|lininhte@yahoo.com          |\n|0003f03c455a4596b4cdc787f86ec5eb|tao_5983@126.com            |\n|0003f9a06a824884ad82ba880e93be44|franz_michel@huntsman.com   |\n|0003fe3cc91a4df59c78abcf85b1b800|rla12ph@yahoo.com           |\n+--------------------------------+----------------------------+\nonly showing top 20 rows\n\n\u001b[1m\u001b[34msocials_email\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [fcid: string, query_value: string]\n\u001b[1m\u001b[34memail_deduped\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, email_1: string]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=9",
+              "$$hashKey": "object:2931"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=10",
+              "$$hashKey": "object:2932"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615364311776_1347497199",
+      "id": "paragraph_1615364311776_1347497199",
+      "dateCreated": "2021-03-10T08:18:31+0000",
+      "dateStarted": "2021-03-10T08:19:59+0000",
+      "dateFinished": "2021-03-10T08:20:31+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2557"
+    },
+    {
+      "text": "val socials_joined = twitter_deduped.join(phone_deduped,Seq(\"fcid\"),\"full\").join(email_deduped, Seq(\"fcid\"),\"full\")\nsocials_joined.printSchema()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:35:22+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- fcid: string (nullable = true)\n |-- twitter: string (nullable = true)\n |-- phone_1: string (nullable = true)\n |-- email_1: string (nullable = true)\n\n\u001b[1m\u001b[34msocials_joined\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615364399504_770066816",
+      "id": "paragraph_1615364399504_770066816",
+      "dateCreated": "2021-03-10T08:19:59+0000",
+      "dateStarted": "2021-03-10T08:35:22+0000",
+      "dateFinished": "2021-03-10T08:35:23+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2558"
+    },
+    {
+      "text": "socials_joined.show(100,truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:35:26+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------------------------------+-----------------------------------+------------+-----------------------------+\n|fcid                            |twitter                            |phone_1     |email_1                      |\n+--------------------------------+-----------------------------------+------------+-----------------------------+\n|000051fedb214980be3781f1a6a7c8c4|https://twitter.com/bhglove        |null        |bhglove@yahoo.com            |\n|00005c71dda84584b483b2947706fff5|https://twitter.com/imrankhedeka46 |null        |null                         |\n|00005dc435f04cd8b87637affd79dfb6|https://twitter.com/valeriyzyryanov|null        |null                         |\n|00006b9d6e744f60aa76128003159493|null                               |null        |jennifer@samsungair.co.za    |\n|00007fccce5a4ae1b639dba1ddc6f89b|https://twitter.com/mrssamanthaash4|null        |null                         |\n|0000977951ca49b88a6ddd5aafc4c8a0|https://twitter.com/davidhu62605781|null        |suppose513@gmail.com         |\n|000097c384cb4aa7a96bac053f074b2d|https://twitter.com/babrinowest    |null        |null                         |\n|00009b3b6ca44775a4905109f633b26b|https://twitter.com/ajeet47949131  |null        |null                         |\n|0000a65e22bb4f30a4a960f7bdf70861|https://twitter.com/bcvevo         |null        |null                         |\n|0000a6e201fb4cc4830b1ef3d63940bc|https://twitter.com/raulanarkopunk |null        |groverazo@hotmail.cl         |\n|0000b04bc5f6423a91bccae4eed2da85|null                               |null        |taner_303_@hotmail.com       |\n|0000b5e4a3024696ab2cf89f33a87618|https://twitter.com/junjun_912     |null        |null                         |\n|0000b6f2e1b84c959e3aac23a6ab423e|https://twitter.com/tropicanacr    |null        |null                         |\n|0000e61fbdb1468eae9ec9b1f519af71|https://twitter.com/poeticlullabye |null        |null                         |\n|00010c03c67b4875972f2b5ad76ef3b5|https://twitter.com/willsgdr       |null        |null                         |\n|0001179e8b174be7b6506607b859b0df|https://twitter.com/lezliev        |null        |null                         |\n|000158af390840a7ba951004585f67d1|https://twitter.com/none31982526   |null        |null                         |\n|00016b5a9f7e4a97a9f8995eef7507ed|https://twitter.com/01hiddensecrets|null        |null                         |\n|000177772792473cb0579d196bb61f49|null                               |null        |cornvey1@gmail.com           |\n|0001d394c2e34d6a825f98af9d32ab14|https://twitter.com/trem_marlon    |null        |null                         |\n|0001ee964b864749ab33be20fe215040|https://twitter.com/rajeevbhagat   |null        |rajeev.bhagat@yahoo.com      |\n|000204e8e3db4e95ab9d012fe7fb8f7e|https://twitter.com/sameer_556     |null        |null                         |\n|00020ac6c2ac473ab7e922a9e37af709|https://twitter.com/0dqwim9clheivsr|null        |null                         |\n|000237453b3e4ea28a31d7580619e0ea|https://twitter.com/toofy_1212     |null        |null                         |\n|0002904e2dbe4f509fee8bb8db4f29bf|https://twitter.com/undertaker6073 |null        |null                         |\n|000293a03e914895af9004853d729b56|https://twitter.com/luciasanchez_  |null        |null                         |\n|0002b122eba049fbab6a0fe9d3879a71|https://twitter.com/den_ivantsov   |null        |den48rus@yandex.ru           |\n|0002b1f9383246939c6f93bfc5ef3c8e|null                               |+19253233954|null                         |\n|0002b47c6a824afdbadea3c3f4bd9bc8|null                               |null        |almurphymoreton@aol.com      |\n|0002c3d5dfc1407fac9dd429bc99966a|https://twitter.com/maribel_zelaya |+13204443795|maribel_zelaya@hotmail.com   |\n|0002d69a5c0c4292b6fc936d22aa1623|https://twitter.com/guardianoftroy1|null        |null                         |\n|0002e55b302643b0aa6709bbd8937819|https://twitter.com/rachanate      |null        |lininhte@yahoo.com           |\n|0002f10117954f879fdebed627a10850|https://twitter.com/k_almaghreb    |null        |null                         |\n|0003508e113c4bf9929df5a6e83ae94b|https://twitter.com/dealmongers    |null        |null                         |\n|00035181fab74d9f9f48ddfe76a08034|https://twitter.com/nahirzayas     |null        |null                         |\n|00035b678506481aa07854307c09e752|https://twitter.com/wencyllanto    |null        |null                         |\n|000367e730ee4b9a91758683e9c932b1|https://twitter.com/blahh_jazmyne  |null        |null                         |\n|0003858b42de47cc859ecc693cf88be6|https://twitter.com/isnotdeliberate|null        |null                         |\n|0003bbbaa3304d14a6f7226881c47e85|https://twitter.com/hoyosval       |null        |null                         |\n|0003c65c3e174b60adb3fe8956b217f8|https://twitter.com/1fc4d3327cce41e|null        |null                         |\n|0003e7a660cb4a2fab54b28afdd19216|https://twitter.com/andradeshen110 |null        |null                         |\n|0003e7f07acc4f0bb8686652c1a97078|https://twitter.com/moseley15      |null        |null                         |\n|0003ee1baa24432cb55a05df0fe9701b|https://twitter.com/dr_raddadi     |null        |null                         |\n|0003f03c455a4596b4cdc787f86ec5eb|null                               |null        |tao_5983@126.com             |\n|0003f35c7a614a10abe7e975752bddd9|https://twitter.com/melxior1       |null        |null                         |\n|0004323c98d64ec788dbe6877ee0465c|https://twitter.com/buglisidance   |null        |null                         |\n|00045cbac67a46ce94c0a8624b35ac30|https://twitter.com/ataurra37547219|null        |null                         |\n|000460607fd64364b9ec7ecfb5a046d2|null                               |+17132220860|jerryfry@hal-pc.org          |\n|00046aa1b56447afac0e35c0c0e51a0e|null                               |null        |cacso@yahoo.com              |\n|00046ca9e1eb41c688f0bec90683892f|https://twitter.com/its__bella_    |null        |null                         |\n|0004d4275a2741d38ac5f67bcbc2a631|https://twitter.com/dmcg5380       |null        |null                         |\n|0004e1f322ca48d0a0510f9827fd524e|https://twitter.com/chancedailyj   |null        |null                         |\n|0004e64bcc6d49d59f3bae4687ad9575|https://twitter.com/sofiacopola453 |null        |null                         |\n|0004ef836bc04c8aad2fa79b9ad80ac5|https://twitter.com/svetka1974     |null        |null                         |\n|0004f12bce4e4f9181e8e3a1597abfed|null                               |null        |giorgio.marsiglia@unifi.it   |\n|0004f4484a4c464a9d992386b104f8fe|https://twitter.com/koukun_0721    |null        |null                         |\n|000534eb181a477da66ce2d3bac45f0f|https://twitter.com/clubfabipa     |null        |null                         |\n|0005402c05b342829264d67e0edeefa1|https://twitter.com/katiecarver117 |null        |null                         |\n|00054be215044884b555e9c34427e501|https://twitter.com/tkopa36        |null        |tkopacek1@gmail.com          |\n|00056e70a95c4f9f954718f9dff3a3c2|https://twitter.com/qcs8hxkgpljhll3|null        |null                         |\n|00057327538b4a7eb67a3a7b33d8a26e|https://twitter.com/yansun_akb49ips|null        |null                         |\n|0005b237ecf943bb84ed3ba6a1555b14|https://twitter.com/camilavf_      |null        |null                         |\n|0005eedee61f4de6ace7d226c04c6ffe|https://twitter.com/unhumbly570    |null        |null                         |\n|0005fa36ddf24255966a62aeb06c8a17|null                               |null        |phillip.sheldon@uky.edu      |\n|0006417c35a34a3da307977fefaf9d65|https://twitter.com/greatwsh       |null        |null                         |\n|00068b3b2a074aa0b67651b3a7c30484|https://twitter.com/dione_4411     |null        |null                         |\n|0006a1e389aa4e62ae4c845024770da2|https://twitter.com/brunodlopes3   |null        |brunodlopes3@gmail.com       |\n|0006a72edbd44e70a83dff53209062fa|https://twitter.com/thcdeliquents  |null        |null                         |\n|0006a8eee7be4df88feb827f0242a12c|https://twitter.com/stoptimebar    |null        |null                         |\n|0006b82050854f73965f5f110177b0a5|https://twitter.com/guruexperience |null        |null                         |\n|0006bf88ed21430d9adc2d50c9774961|https://twitter.com/lucasga64957201|null        |null                         |\n|0006d796c98244ef8e5d7f1503fe7c4c|https://twitter.com/jorgemprender  |null        |null                         |\n|00072947b7c543ec9c43bd1d1bc68527|https://twitter.com/marilynbarron19|null        |null                         |\n|00072e42ddac4662b23b1242ebf0256f|https://twitter.com/llacirasella   |null        |null                         |\n|0007710edfc44b09a49e02e21cd8ac6f|https://twitter.com/4609beat       |null        |null                         |\n|00079aa593d64e1587cff2accfe5edc7|https://twitter.com/ribeiropm357   |null        |null                         |\n|0007b78695674b6b848dd5407668319f|null                               |+16464046443|null                         |\n|0007bad392c74577be52b5a2f59b6208|https://twitter.com/jaakojiix      |null        |null                         |\n|0007c95b474f428faa7aaf9480ca2a7e|https://twitter.com/parvezshanaas  |null        |aparvez@yahoo.com            |\n|0007e061596c490c805b06f7e5d154b6|https://twitter.com/chandru42385458|null        |null                         |\n|000812e07a3f4982b0a59af081c29a78|https://twitter.com/ziqivcnxtj80j9b|null        |null                         |\n|000814f15cc84245ae7145978eef6e03|https://twitter.com/tanigatorenai  |null        |null                         |\n|000815f80d0947c2b8ef8fbd478a4f19|https://twitter.com/lynnrachelle546|null        |null                         |\n|000832e5d26447c092afaf4f07032a95|null                               |null        |daniel_pennewaert@hotmail.com|\n|000835e60f954599b559ff527e137172|https://twitter.com/dagashi_tora   |null        |null                         |\n|0008443cace443c9a7a040879eeae86a|null                               |null        |leslie.hinson@halliburton.com|\n|000854f65652454dbc8d57c38c7885d6|https://twitter.com/anoutsiderpoet |null        |null                         |\n|00085b520d034b49b99c9cdeb58d4f44|https://twitter.com/analogfidelity |null        |null                         |\n|00085f4ec9bc4821a5eb4fc5ca516c1a|https://twitter.com/mengdensity    |null        |null                         |\n|00087e3d40fb49f09133378255edbeb4|https://twitter.com/carioca262     |null        |pepi27@live.com              |\n|00088443b2c1467481cc5086a3ae2a53|https://twitter.com/sekermor       |null        |null                         |\n|00088e3a603a409492fdcee1fb05d983|https://twitter.com/yaizalittle    |null        |null                         |\n|0008b740ff6e4fa3bedb06f5edcd8832|https://twitter.com/mimigatta      |null        |null                         |\n|0008b7ff95364a69a329ce33d2a2649c|https://twitter.com/nclpcbe        |null        |null                         |\n|0008d5732e044da8b225df8d27b6232b|https://twitter.com/5sosmerel      |null        |null                         |\n|000906a59b064b4bb497d251bfe7c181|https://twitter.com/caro_achondo   |null        |null                         |\n|00090ddf84dd457fb2972fbef913ad4b|https://twitter.com/dawnbread      |null        |usman@uaemobiles.com         |\n|00095c997b574c7b8df4746999fddac1|null                               |null        |sowelladam@gmail.com         |\n|000961e0d0404c868cffe277f7afc450|null                               |null        |raqueldearaujo@hotmail.com   |\n|000982443961478f8ab51e0c991a97ad|null                               |null        |majonichols@hotmail.com      |\n+--------------------------------+-----------------------------------+------------+-----------------------------+\nonly showing top 100 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=17",
+              "$$hashKey": "object:2965"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=18",
+              "$$hashKey": "object:2966"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=19",
+              "$$hashKey": "object:2967"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=20",
+              "$$hashKey": "object:2968"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=21",
+              "$$hashKey": "object:2969"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615364588128_2048326000",
+      "id": "paragraph_1615364588128_2048326000",
+      "dateCreated": "2021-03-10T08:23:08+0000",
+      "dateStarted": "2021-03-10T08:35:26+0000",
+      "dateFinished": "2021-03-10T08:37:48+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2559"
+    },
+    {
+      "text": "val fcid_us = sqlContext.read.parquet(\"s3://fullcontact-exports/unified-data/data-lake/person-tables/2021/02/19/21/39/person_demographics\").where(((col(\"country\")===\"United States Minor Outlying Islands\" )||( col(\"country\")===\"United Sates\" )||( col(\"country\")===\"United Staes\" )||( col(\"country\")===\"u.s.a.\" )||( col(\"country\")===\"United States of America\" )||( col(\"country\")===\"u.s\" )||( col(\"country\")===\"Unite States\" )||( col(\"country\")===\"us\" )||( col(\"country\")===\"UnitedStates\" )||( col(\"country\")===\"United states\" )||( col(\"country\")===\"US\" )||( col(\"country\")===\"United State\" )||( col(\"country\")===\"Unied States\" )||( col(\"country\")===\"United states\")||(col(\"country\")===\"Usa\" )||( col(\"country\")===\"U.S. Virgin Islands\" )||( col(\"country\")===\"United States\" )||( col(\"country\")===\"usa\" )||( col(\"country\")===\"Us\" )||( col(\"country\")===\"united states\")||( col(\"country\")===\"Unitd States\" )||( col(\"country\")===\"USA\" )||( col(\"country\")===\"United Stated\" )||( col(\"country\")===\"u.s.a\")||( col(\"country\")===\"US\"))).select(\"fcid\").distinct",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:52:52+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34mfcid_us\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [fcid: string]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=23",
+              "$$hashKey": "object:2994"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615364973188_-1379227672",
+      "id": "paragraph_1615364973188_-1379227672",
+      "dateCreated": "2021-03-10T08:29:33+0000",
+      "dateStarted": "2021-03-10T08:52:52+0000",
+      "dateFinished": "2021-03-10T08:52:54+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2560"
+    },
+    {
+      "text": "val socials_us = socials_joined.join(fcid_us, Seq(\"fcid\"),\"inner\")\nsocials_us.count()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T08:53:54+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34msocials_us\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter: string ... 2 more fields]\n\u001b[1m\u001b[34mres21\u001b[0m: \u001b[1m\u001b[32mLong\u001b[0m = 124611992\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=24",
+              "$$hashKey": "object:3011"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=25",
+              "$$hashKey": "object:3012"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=26",
+              "$$hashKey": "object:3013"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=27",
+              "$$hashKey": "object:3014"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=28",
+              "$$hashKey": "object:3015"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=29",
+              "$$hashKey": "object:3016"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=30",
+              "$$hashKey": "object:3017"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=31",
+              "$$hashKey": "object:3018"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615366347221_-1936392669",
+      "id": "paragraph_1615366347221_-1936392669",
+      "dateCreated": "2021-03-10T08:52:27+0000",
+      "dateStarted": "2021-03-10T08:53:54+0000",
+      "dateFinished": "2021-03-10T08:58:05+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2561"
+    },
+    {
+      "text": "socials_joined.count()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T09:05:13+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34mres22\u001b[0m: \u001b[1m\u001b[32mLong\u001b[0m = 682561801\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=32",
+              "$$hashKey": "object:3049"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=33",
+              "$$hashKey": "object:3050"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=34",
+              "$$hashKey": "object:3051"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=35",
+              "$$hashKey": "object:3052"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=36",
+              "$$hashKey": "object:3053"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=37",
+              "$$hashKey": "object:3054"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615366412778_548368355",
+      "id": "paragraph_1615366412778_548368355",
+      "dateCreated": "2021-03-10T08:53:32+0000",
+      "dateStarted": "2021-03-10T09:05:13+0000",
+      "dateFinished": "2021-03-10T09:07:20+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2562"
+    },
+    {
+      "text": "fcid_us.count()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T09:07:34+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34mres23\u001b[0m: \u001b[1m\u001b[32mLong\u001b[0m = 341706290\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=38",
+              "$$hashKey": "object:3081"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=39",
+              "$$hashKey": "object:3082"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=40",
+              "$$hashKey": "object:3083"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615367113927_-1497219517",
+      "id": "paragraph_1615367113927_-1497219517",
+      "dateCreated": "2021-03-10T09:05:13+0000",
+      "dateStarted": "2021-03-10T09:07:34+0000",
+      "dateFinished": "2021-03-10T09:09:26+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2563"
+    },
+    {
+      "text": "\n\nval infutor = sqlContext.read.parquet(\"s3://fullcontact-data-pipeline/thirdparty/infutor/infutor_flatten/1613770704/enrich/activation/person_raw/\").select(\"fcid\",\"infutor_phone_1\",\"infutor_email_1\").where(length(col(\"fcid\"))===32).where((col(\"infutor_phone_1\").isNotNull)||(col(\"infutor_email_1\").isNotNull)).withColumnRenamed(\"infutor_phone_1\",\"phone_2\").withColumnRenamed(\"infutor_email_1\",\"email_2\").withColumn(\"twitter_2\", lit(\"\")).select(\"fcid\",\"twitter_2\",\"phone_2\",\"email_2\")\n\nval kbmg = sqlContext.read.parquet(\"s3://fullcontact-data-pipeline/thirdparty/kbmg/kbmg/1613770704/enrich/activation/person_raw/\").select(\"fcid\",\"kbmg_twitter1\",\"kbmg_phone1\",\"kbmg_email1\").where(length(col(\"fcid\"))===32).where((col(\"kbmg_twitter1\").isNotNull)||(col(\"kbmg_phone1\").isNotNull)||(col(\"kbmg_email1\").isNotNull)).withColumnRenamed(\"kbmg_phone1\",\"phone_2\").withColumnRenamed(\"kbmg_email1\",\"email_2\").withColumnRenamed(\"kbmg_twitter1\",\"twitter_2\").withColumn(\"twitter_2\", concat(lit(\"https://twitter.com/\"),col(\"twitter_2\"))).withColumn(\"email_2\",lower(col(\"email_2\"))).select(\"fcid\",\"twitter_2\",\"phone_2\",\"email_2\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T10:58:54+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34minfutor\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter_2: string ... 2 more fields]\n\u001b[1m\u001b[34mkbmg\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter_2: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=99",
+              "$$hashKey": "object:3104"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=100",
+              "$$hashKey": "object:3105"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615367254748_171424422",
+      "id": "paragraph_1615367254748_171424422",
+      "dateCreated": "2021-03-10T09:07:34+0000",
+      "dateStarted": "2021-03-10T10:58:54+0000",
+      "dateFinished": "2021-03-10T10:59:06+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2564"
+    },
+    {
+      "text": "kbmg.show(100, truncate=false)\ninfutor.show(100, truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:01:41+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------------------------------+-----------------------------------+----------+--------------------------------+\n|fcid                            |twitter_2                          |phone_2   |email_2                         |\n+--------------------------------+-----------------------------------+----------+--------------------------------+\n|56a53055240c47a48d5eb0055f616539|null                               |4138968295|9fdd4ed623b3103217fcd36a3ad1176e|\n|d55712acf5eb4b0f84e0f9312572b75a|null                               |null      |d7a2bc87fc34ec16942c506ec87dff23|\n|8fa3ea7c2a0e44acb72a4cfe5d8a64c2|null                               |9176756805|3c73085f6e090bf68920037ef845d97a|\n|5c681fd9059d4ecf97f14cfcea5992de|null                               |7166983343|379b78c30b84bec52dc08c80c8477edc|\n|7d254eb3995c474c941fc35e6e107da1|null                               |8053774179|10767e4596e207d0ab1112fe6d5c7f2b|\n|d0571bf3d42c4089b187ac697cd9f37a|null                               |null      |d788f27687503afd6b2004cbb8f094cc|\n|b1c6448599ce4e819d664735b25a42b2|null                               |null      |a505b6aa94e5b2743467e5866a948b20|\n|bcb17060027d40409c86362cd07be242|https://twitter.com/mattgilles     |5024177838|302d43d0e38363a78c413a0bce3378f9|\n|5fe72a7124c54deeba6a68d923574929|null                               |6077987598|null                            |\n|bd760ef78af74f11960009ac3a8cd7b9|null                               |9142996848|693eacdbcc3ab11f03aac5612b9f10b1|\n|8d4a19a513eb464989cbc56249c4f313|null                               |3213125904|bfb74b51fd390bccb2cae0a888564d4c|\n|25d01f052eb943f686015fa5efcaaef3|null                               |5105825222|c5263c234bfc3e83d0b2ea07d7493420|\n|327c4dfd730743cba1756fd58d163216|null                               |5857973354|27f7f184fdcb3afe6e17445d2fe753a9|\n|1de1810676994b2699061a486fae343b|null                               |null      |8845c66a211c4cf93300ea842e4972d3|\n|9bb6b885bf8a439b9b860a29c3898503|null                               |null      |4aa96d9022ddbb4140278c41c2cc4e5b|\n|6c45a739d3884625934995f07d4e3fde|null                               |5309219477|65aa180cf80dac58879ae478e31f8931|\n|ee04d93e71f64077bc6d2bde795c56be|null                               |7202771324|260257650e102cda4b9c33617580644d|\n|fea7cddd741d478ebd647562591edb18|null                               |null      |24e368b2b966f5b0cfb9d85bab01cc75|\n|cf95bef7ebe2405c9a6e3ea1618edc64|null                               |7066826118|580db412e9625a7542180f451707dec9|\n|77e341b896f64ce682ff3a44cc386afb|null                               |5029382032|6b2a2fb283b9f7b654fbae924fda478f|\n|74605ca6310d456385e6b03f7735dca1|null                               |null      |156ae4cb0b459b2ddbca1574e9f06a9a|\n|c34c0b6e68ed4eec9915b61373bce83c|null                               |null      |823e040a14f126bfdd4d6cbdf598ac14|\n|c966da708ee242d496c19fb267ef90da|https://twitter.com/zee_vee        |null      |49d9c1399d7b14b70808c7148c86350e|\n|40c8e661eefb4528be3b57212c38dfba|null                               |null      |0371bb20f3d087c2d2694bafad0fc1b4|\n|238680fc1cdc4b3abcd4fd08b0439cab|https://twitter.com/GloriaBroadus  |null      |c38188d7455206ffcc7143f791138a0f|\n|7cc0886046cf481db1f89209cbf6d528|https://twitter.com/Robene         |null      |ec471fe78a7a69650703f20250eccdf2|\n|aa29889a4ec94c88acad56ef3ea04470|null                               |null      |6549e19648f69721b977b9102e0b088a|\n|02d1cd7b52d04009a7eb676ecc649104|null                               |null      |79e70cde71c698482582e2165dcafedb|\n|4a50bae7f3b14296859939a971df5d44|null                               |null      |2319f22f37f6242e0597bd505c78bd89|\n|5c4f532ef57748c28e734e0344b7f094|null                               |5152104866|48df23fee8e001523992cc32255e4078|\n|f85f61a0092449c588b34c1417474410|null                               |2106121790|d14f86135c08198ad2f1ac88c085558f|\n|02a1a56c0349482fa49c91e1eda9b08a|null                               |null      |cacd28ec9382d8a54916c8581072cd68|\n|7138bd2a3a2d4f7cbd9269877fdce15b|https://twitter.com/Tyriqu3        |7062069936|efd4759599ad9b3f981e9f307bf3222d|\n|906d345714f84843857627548bfaa7d3|null                               |null      |0cd04c22e61f1d15a17a59bc4c3a5457|\n|d624b8fc62484bb49d51f9d43668e944|null                               |null      |6e4367ef15186a29ac1d8689a42b7811|\n|d8df8fe306284d5ca5223e52135ca7da|null                               |6084872844|ab4bd7aa6a23f65419bd292443de2360|\n|533b2bd3a47a4b95a7f3b850533334d0|null                               |4126135604|3a1b6f8d1593f03b43056ecdcced3d4d|\n|f81250595d8c4f6994463e18c9426a02|null                               |null      |0dd6f22fd8448f9526396343961068fa|\n|e1d2355b27af4b1baa126275247ba780|https://twitter.com/nyhearingaids  |null      |d2378bcba5d4a0474a047592cdd34707|\n|48ad8ec8a7b34070b2481fc51f11c9c8|null                               |null      |24506db6d0718c308a9303623e4cf24a|\n|584d8dc126fe4c38b10fdaea3c3147eb|https://twitter.com/JasonFriend1   |9083439014|928864d0704b98b5f637b33d9c097e53|\n|1104929b11184b929118e522acf8c8e7|null                               |null      |f9190269ae95e1f3bc9b8c514e5ad284|\n|35fa74629ad54ef4aee98f204acec20f|null                               |null      |69faa79adf3e1923e119a28b5fdcfb41|\n|66177aa9f56d47c49441c8fce5199fd2|https://twitter.com/CarolKinison   |3603033702|f28f0d3aa2ecbb40421181b50a0ac58b|\n|73f9f6f1deef44a389b216d0959b73a6|null                               |2313606433|7b176bcdba3277a8a3c133383e56f4a7|\n|cc97ef2ca42541c5b6a51ceb1db7f86f|https://twitter.com/traciemayfield |3129259474|c3665352a5722d6b9e01e18ee3e25956|\n|0ab5c28988df4933888fd451829155ee|null                               |5612559749|8ebe7646725cfcfbcd26330dad53fc4a|\n|113bf4f0e8ac473d802950389f2e1e62|https://twitter.com/JohnPaulsArmadi|null      |null                            |\n|d050c52c11594261b5ee487dfeb25439|null                               |null      |6a6ca2f90bfa96f6dda1128e23cc0c96|\n|1913ecaa23c74b48abe11301374b4c5a|null                               |8572308717|2cfef68a883cb643d633e79f0fd5ebca|\n|fb4fef48957e438c8bf80ad9010e250b|null                               |3862922517|40595f826bf89891fc92b40f4592f81b|\n|405c84128c314987ac99a3610bdd0b9f|null                               |2165367040|null                            |\n|8aa233f2d26a48da9c3d8b1d89a61f1b|null                               |4077188923|a63fa9742877ffdffa6fe87d3e86e812|\n|d05dbf3a49ae49bb94b6c8d862041d39|https://twitter.com/himurabattosai8|null      |3e2307bcf30eae7518f69eed96246c82|\n|2911ac79433e4a2b9d7599366f76455d|null                               |null      |026313c2d14a59daf49321fa22409358|\n|a65802d79dff41978166508543b7a3bd|null                               |null      |32058bd2a22cc63ebef1eceacd54fe02|\n|e660cac4f38142108515f43a65d63d4c|null                               |2174661218|6ac54d6ca48d87f7762ee02eb4cc59b2|\n|f3a078d365d94996b18ad26501963fc6|https://twitter.com/HomerJSpartan  |4802820720|12fb772785778cc4a67dca79fc800c85|\n|8a0bbb3fa8f44f5d96c52234119f3160|null                               |2606227319|null                            |\n|c352dff33a3c40a798851bbbebfd8a5a|null                               |7025217577|dee6c8ee174d26f9013fe236cc30f861|\n|3dc669b758ff43a78338754245a8034b|null                               |7036749134|f7c833a408035800dacef631d6b1a6bb|\n|537cbe983df84da58ec1285fb317d230|null                               |null      |bf5b6253f502d46d0aaf89dc10fea4e1|\n|4aecbb085b7b4a2eb57dd0fc7c1d05b9|null                               |9196968465|b27be2143eafc41d01638c26c4fbec0f|\n|975cc492415c4902989d2c0b343cdb25|null                               |null      |3454baa93d437e67dfc23eeed9104ad8|\n|d18a1aa2f25d41138e7e2426db7e4a62|https://twitter.com/deb6paul       |null      |null                            |\n|a2a76565d6964f5a8fbcc51069bd4b2e|null                               |3867401942|70324c41c394245a33ab9762fae93781|\n|c93f120dcb734561bf323154f935ec91|https://twitter.com/luss_susan     |null      |ed9c8ad964749bfe7e74d0b0f6611a4a|\n|bc6bba1f8e0e429f8f907572aba29ab4|null                               |null      |d5485a098d7d005a2e87a8896619fdc1|\n|d07b822eb2c84b06b583bd148bd38a17|null                               |null      |a7384bae8f6078ecedfd5d0e79369400|\n|5439007bdc1740aeac6c4fbe3c4d3da5|null                               |null      |ac03bbc0cff3d976f655b09338d0f636|\n|1fcb7adef8ca4f18aa5856361925c906|null                               |null      |7e3881408785280eff211c6cebfbbb74|\n|9735dc1551824c8cbb35817b279e2677|null                               |null      |7cfedb79ea10ba957e72431daf20b30b|\n|ef84c4939ec24bfaa14f4d617cc11664|null                               |null      |ac7498586a938e8e11cbc469233066a2|\n|e275eef7903b4258b65fa6c4769493ca|null                               |7276571941|0d746262b8e461a9bbc5c7130a06ddd2|\n|d1d0acb065764adf8e23e46418a131b6|null                               |null      |94e4fc3ee2448e3e2a11b1d5a50b77d6|\n|e420c51a59e44f3495492b825a0a58b4|null                               |9895298039|4c6a2b645013699662f8cf510916f244|\n|17ff8fb4979e408c98d383b538555a3a|null                               |2062954183|762fd2d14f44f80aaf1329ba004543e2|\n|63b45de2595c4b80942a90952ea96302|https://twitter.com/wwwmalowe      |null      |cfe7d0450e75355068ed46d6ba3b1997|\n|1d284c0294c54d568de3fba87b5a07cb|null                               |3158775229|1b96899467fc680ae0f980d768268ce2|\n|f4ad65434fcc4ad79cf6fb72b032f61d|null                               |8649017873|2be06a1b3328337cc37911f5b1743e80|\n|9fccb8ff94054c6fb514a53d4884460c|null                               |2258924222|585359dc071d1347341957ca4c88c705|\n|42d77cf19be6476d91f50e775dbe8306|null                               |8433453309|3cf22d30e44ddfc9332c3dd671f0d2ee|\n|a8489216deae41a9a2be355818323305|null                               |5083535776|d1cf36465a41a790ab86ba4439aed8f2|\n|63b3a6e7548041839b23923b5be37f65|null                               |null      |613fa4fc218b596574331b32c1036531|\n|39d189e695a34cd59716bfdd58e80bd9|null                               |7817184366|a26a0a660817ed3bf19b3605c3e5e4bb|\n|b5ce519febe9426dadb06b7aefb7abb8|null                               |null      |9c9b72ab2d63ea2eeea446a3ae91c112|\n|80f01d1126064d438cf2510638e04c0a|null                               |null      |5bfbda43bbf2ded8e5fbf6a41a42d2e4|\n|029fa6b094d148b98794cf6073c615dd|null                               |9372695161|c72775ac0ccc41aa76b19df3b6b82534|\n|225965297efb4a68996a1fac48611ca2|null                               |null      |e2456f4741a328db6577727815a8c554|\n|9c0c7f5055704e0183774c903be5b149|null                               |null      |6ac51c01034ab8cc065d04bb895179a1|\n|38c0a9432a7f4d1c800b06ae9bf5c587|null                               |null      |18b22c4dd8ef41b9003a454cfdd8705b|\n|c6464b7611404c408ee942a7ce7747f9|null                               |null      |be8fc00fa609a6263f5ae6f0668c42af|\n|75923224f6204165959a66c038265481|null                               |null      |b69cd80c225b5ab3844c7fedfbd33d19|\n|d1b9b142aa3c4ab8af586542d07adeae|null                               |2393241805|295ea67100fa15997beb264f42e046a5|\n|cb7e80dd14b24a0fa5e6ce8b17d552e9|null                               |null      |d8d18486e94886d80c10f58e68a5fe27|\n|b5f1bb751fd24e74bdb1fc0c50ae03d6|null                               |null      |9a32b878243f1390c67a35ddb6c27841|\n|739c2b6ed2564479b21567f4b589a482|null                               |4012191703|3eb1224fccb2f2c50a125894f38bd636|\n|31c42ec7aef64f27ac845500e7d9657d|null                               |null      |507e3a4bfb938ec84c47496d669928b9|\n|4e59655185044c3582a59cefd4e73806|null                               |null      |7132f0dd051782864c121c1395ed45ff|\n|3fe3bb6144c441e694d0357b8fdd59d3|null                               |null      |363a5267a23e67802ae73fda85a6528a|\n+--------------------------------+-----------------------------------+----------+--------------------------------+\nonly showing top 100 rows\n\n+--------------------------------+---------+----------+--------------------------------------+\n|fcid                            |twitter_2|phone_2   |email_2                               |\n+--------------------------------+---------+----------+--------------------------------------+\n|fd49285fbf934c40b5954f860926a05d|         |6318970625|LUCY.SHAPIRO@AOL.COM                  |\n|49ef1f6c24044266ae5a6e05943ca641|         |null      |GKRAUSE@GMAIL.COM                     |\n|44917262fee845389cb844b451b1bd07|         |null      |SHELIAJOHNSON@WORLDNET.ATT.NET        |\n|6395367ec1b64425ad6a763300d25d59|         |4085594648|MEIER@CENTURYTEL.NET                  |\n|70a885641ae8493e82a92980424292a3|         |4123621867|CLEVELANDHALL@YAHOO.COM               |\n|28e01567c3204b38b35439b02ee57644|         |2486417746|ROMUALDO.VENDITTELLI@HOTMAIL.COM      |\n|18f9963355654212ac489739b483ee56|         |6145563934|CHRISTOPHER.BASS@YAHOO.COM            |\n|3bf8989058fc44849483388e1dc4adf1|         |null      |CRAZYDADO@AOL.COM                     |\n|4f221e94feea44ee92bc3d2811a8b3f6|         |null      |SHANIQUA-JOHNSON@UTC.EDU              |\n|180327f2b15d4477b7818aa79268e74f|         |null      |LWHRLY@BELLSOUTH.NET                  |\n|49e72652f4514dc58a38c6bc179625b3|         |4787148360|CHRISTOPHER.ROBINSON@GAROBI.ANG.AF.MIL|\n|eb9d72adf0614a4a8c43f889bb6964ac|         |null      |SHARON.CASTILLO8@GMAIL.COM            |\n|b579026a1d2b4e999cdc732048f9cd8d|         |7704831746|SYLVAIN_DOMINIQUE@YAHOO.COM           |\n|7506c06c7ab9456d99619fe26767d740|         |7134100767|LWA23TX@AOL.COM                       |\n|c481496e0e7c48fcb2ffd0bd328f8001|         |8505978190|BNOBLES@TRIAD.RR.COM                  |\n|cd6c041ae1db42aba2bdc0ede412354d|         |null      |ZENAGORDON@BLACKPLANET.COM            |\n|aaecc202cf4e43ec8fe6b2e113912133|         |null      |WCG2121@GMAIL.COM                     |\n|1a6dcbd37d7549adb4b3c5143692fbc8|         |null      |DMDOODLES1983@AOL.COM                 |\n|f84dbb658039482ba9c856a7ae9cb416|         |null      |J8PKWG@BELLSOUTH.NET                  |\n|6e699a64e75d454cbad63946b477235d|         |null      |COCOAROSE28@AOL.COM                   |\n|8f34658892124c5c834933810300a7d9|         |9145649685|JANA.KELLAM@GMAIL.COM                 |\n|41ff5fd20a424326b460ac6b45f846b9|         |null      |ROBINSON.ALEXIST1@GMAIL.COM           |\n|c617f1d477e04f8f9deb0ae598db8139|         |6076982515|DIESEL6.6@VERIZON.NET                 |\n|7f4dfae8d5044c298faedc1a847748e8|         |3375235421|TAYLBESSARD@GMAIL.COM                 |\n|f2b3ec2dce984da6be656eedb603fe03|         |null      |MIRJAW@AOL.COM                        |\n|796053fa38b84c39a4b2a3cf13c4a041|         |null      |ANDO1225@ADDRESS.COM                  |\n|5fbd189f10ee41ff9b9f3b6111a1a128|         |null      |CHEFDRS@HOTMAIL.COM                   |\n|dec48844d29547569a97305157bef8cf|         |null      |ASHOLIK@AOL.COM                       |\n|a7c96d03bc6041269233c45ad9ea3158|         |4807059105|BONBON1024@AOL.COM                    |\n|5f46028214eb47919f64983b732bef89|         |6177325999|ELILYCARTER@YAHOO.COM                 |\n|0a543668bf004f889ed5d3fdaca906d8|         |null      |TEERBARBARA@YAHOO.COM                 |\n|2c3ed7c4396b46b3873a0bccd1dfd748|         |9014768049|CHOIR-URL@HOTMAIL.COM                 |\n|fbef0f91a3f547e3b0f37de5dea1a1be|         |3166403946|FISHMANDIEMER@HOTMAIL.COM             |\n|79b105aded66475ab0d8f079e1aa0404|         |6509220731|RPOTTS@YAHOO.COM                      |\n|976b2b889b7744cfadf5fcc9a933264f|         |2052742043|RICKNCANDIE@URISP.NET                 |\n|28af3ed3f44142ef89b18b2998a432a2|         |9098746807|BURDENIBN@HOTMAIL.COM                 |\n|74b8f3158e5348e0b01916b020a5757a|         |null      |VICECITY@AOL.COM                      |\n|e091a80a336b4a818833433b392b1a19|         |4027483326|HIMENTIONCE@HOTMAIL.COM               |\n|c9bf38791d5b41e59c1a68df9056789b|         |2077257887|BIGBOBBACON@YAHOO.COM                 |\n|95a17bbd01174a02b7d88513958775d2|         |null      |PAUL_ABARBARIAN@YAHOO.COM             |\n|406e99b47f464e00a4eb65046c9dbd4f|         |2392008073|FRSMITH26@HOTMAIL.COM                 |\n|64ab7e958a6e4cf9b21af43565f3fcf0|         |null      |SANDRATIWARI@YAHOO.COM                |\n|5612e9de02d1479abf42c7e24427a5cd|         |5037688867|ARIANNA2PLY@AOL.COM                   |\n|c757b9c83179453e980b53ce9237b9f2|         |null      |ELIA.MARTINEZ@PACBELL.NET             |\n|9dc10b3e695d40c98ea3b233699551d7|         |5133107086|GWENDALYN.CURTIS@YAHOO.COM            |\n|78cbc5522f2c4abbb71ec26875fbe985|         |null      |SHAMIER.LOPEZ@YAHOO.COM               |\n|23d7a71f457a432996d6a9225c3a2f54|         |8085615416|OLIMPIA.INFANTE@JAMESHARDIE.COM       |\n|a4624853ea634e39b0bc3a50067f748c|         |null      |RIOFLAGIRL@GMAIL.COM                  |\n|d8367cf09a454ecc825691804b9d088c|         |null      |CARROLLPIRTLE84@GMAIL.COM             |\n|12237279d6014f34ba56750e91c4a25a|         |3303589906|ROCKNMETAL9@GMAIL.COM                 |\n|86f49d8712a1443ebade30d8b169bb24|         |null      |HUNTER1111199@YAHOO.COM               |\n|639f703476c543a3bf25f41e4f7b6296|         |9789392526|MGABIS@HOTMAIL.COM                    |\n|0e37c83fa47542dd88f566bd4d03f0d3|         |null      |ATRISDALE@YAHOO.COM                   |\n|1d431aebbf0c4762bec4572d55ded7d8|         |7183775496|DFISCHBERGER@OPTONLINE.NET            |\n|ac3d0b4a09ad4db58d1e4bcc22e26579|         |null      |SOLARREFLECT@HOTMAIL.COM              |\n|967b279df8794c7c967cd949274ff8bd|         |null      |TONYALINDSEY@ROCKETMAIL.COM           |\n|9211476219ce4b898e154406b969d0cb|         |7027783345|DISCOPARTYKILLER@HOTMAIL.COM          |\n|c404d60b46a842c3ae529d4fed21a1d5|         |8016885064|POJOTOMUS@YAHOO.COM                   |\n|03aa64721d0a42aeb7c2d3ef1c6c9d30|         |5802200773|CHRISTIEJONES248@YAHOO.COM            |\n|67b1596431e24d29a1f6a3aadf077261|         |8592832520|JAGAN.CHINTALAPANI@DBADIRECT.COM      |\n|f770612a4807481cbf6592bf2efd9c27|         |5419712297|THOMAS.KELLEY@EARTHLINK.NET           |\n|083d4aa496264e2d893c36b9616182c0|         |null      |LJSMTS3222@JUNO.COM                   |\n|aefd797f5a514d5babd7d34dfd64115c|         |9188142745|LAUNAJ@HOTMAIL.COM                    |\n|7043c28f2841441092ed9e1bd99160ac|         |7192508140|WSTOGDILL@AOL.COM                     |\n|827613e088524c3ab16d806d4d05ceb9|         |null      |JENNYG@OCFL.NET                       |\n|bac49d9fb808446f86a34aa3d84b1c77|         |9282899391|DEBAHJEAN@YAHOO.COM                   |\n|a987062ea66a4f67a8fadb79c20df0ed|         |9047552902|TAVINATOR30@AOL.COM                   |\n|ecf66687b4db4679962e03a04153e35b|         |6016169390|TOMMY.MEADOR@HOTMAIL.COM              |\n|820911544c3b4eb685e3ccd3b61f005f|         |null      |LLOYDG@JUNCTION.COM                   |\n|c6f4f80363f542f082ca3aac740b7087|         |null      |OCTOBERBBY2032@GMAIL.COM              |\n|1b31544c1c6a4a2fb0578b906cd77eba|         |null      |STEPHAANIE.MILLER@GMAIL.COM           |\n|22b6280cfff649b8bd9971f176d289ea|         |2814310494|BAP2158@GMAIL.COM                     |\n|290c5341ec454b1ead396a461a3704f3|         |4192467690|AUTUMB63@GMAIL.COM                    |\n|c8beaba1fd4a41bf929f419e2e902b36|         |4042593236|ANDREW2728@WMCONNECT.COM              |\n|c98dd24292254f3a9cbbe141a269a034|         |null      |TODDBCANTRELL@GMAIL.COM               |\n|3f41484193c84d898fbc4e80bbb9e1a6|         |7812214000|MMORRIS@SIGNIANT.COM                  |\n|f9d513c2aaae4969b3b17b9a543b94ae|         |null      |JNA26@PACBELL.NET                     |\n|0c60b981451b4136b6c993c349a85856|         |null      |LAMER.GARY@YAHOO.COM                  |\n|17cad756c7fc4cdeb71ac7c4858eb000|         |7273752899|BFISHER@LYCOSMAIL.COM                 |\n|9b22d16ed697422d886a768a93044166|         |3092316066|TAMARA.PETTITT@WORLDNET.ATT.NET       |\n|ce48397b15024e239a4735ab24196e30|         |2102550716|NORMALEE1976@GMAIL.COM                |\n|ccbd513d80074b408cf3ce5fd3a7f5b6|         |null      |SKYDIVESPENCER@AOL.COM                |\n|ed8afe66907149cdb4771902332bfa53|         |2606370193|LPCHRZAN@YAHOO.COM                    |\n|948264053bb64dbd8c02279b6f8b4379|         |null      |COREYFENSKE13436@HOTMAIL.COM          |\n|2ce9f6a682d0472a99987cd6706f88fa|         |null      |PINK1331@GMAIL.COM                    |\n|c21a9378116b4ca5bb9faf174295438a|         |8185858943|JACKIE.GALL@YAHOO.COM                 |\n|94d71fece0cd4f7fb53ed11f3c194bf6|         |2815932926|DADDY8183@GMAIL.COM                   |\n|c38b19d7b3474773999c9e8078bc49a7|         |4127612421|BROBSON3262@VERIZON.NET               |\n|31d4852a3c97434791edd4edede117ac|         |9189338589|HOOVA_LOC@YAHOO.COM                   |\n|60652f11880f431a98cc60b5c72fbbc8|         |8156907847|RONALD.RIEGER@COMCAST.NET             |\n|fc39e33d450d4387b0a03668801616ac|         |null      |MYSTERYMACHINE@CHARTER.NET            |\n|1e1b6494b36c4c4ea20e426cefc94ac5|         |null      |KULSOOMZH17@GMAIL.COM                 |\n|8627bf914abb45759b5f63b83b7ee135|         |null      |MZ.LYNN_823@YAHOO.COM                 |\n|01cab5391df34daeb0f12ba92a4d67e3|         |7048684674|DHOWE@AMVETS.ORG                      |\n|0d3d370dfb1142a2a076cbbd091b45bc|         |null      |MWOFFORD@PLANETGROUPINC.COM           |\n|8c2d84cb2aad4937b3be86b670c50b16|         |2145960107|ABRAHAM.ARELLANO@T-MOBILE.COM         |\n|09c773fa6c3747298fddcabe34919bd7|         |null      |INDIAHAWKINS13@GMAIL.COM              |\n|cadbaf9cf4194bc7a768bd0efe70d3a3|         |9144673168|SHIRLEYTAYLOR1712@ATT.NET             |\n|d36dc3ca0ac246de8a6d7b7fe22dfee3|         |5073545924|MYFSB@MYCLEARWAVE.NET                 |\n|e35f6ab590a84787805fe318c0b6fb83|         |8643802372|LSLYOWEN@YAHOO.COM                    |\n+--------------------------------+---------+----------+--------------------------------------+\nonly showing top 100 rows\n\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=101",
+              "$$hashKey": "object:3124"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=102",
+              "$$hashKey": "object:3125"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615371707607_-1896597025",
+      "id": "paragraph_1615371707607_-1896597025",
+      "dateCreated": "2021-03-10T10:21:47+0000",
+      "dateStarted": "2021-03-10T11:01:41+0000",
+      "dateFinished": "2021-03-10T11:01:55+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2565"
+    },
+    {
+      "text": "val hashes = sqlContext.read.parquet(\"s3://fullcontact-exports/unified-data/data-lake/email-hash-table/2021/01/11/19/58/\").select(\"plaintext\",\"md5\").distinct\n\nval kbmg_hash_reversed = kbmg.join(hashes, kbmg(\"email_2\")===hashes(\"md5\"),\"inner\").select(\"fcid\",\"twitter_2\",\"phone_2\",\"plaintext\").withColumnRenamed(\"plaintext\",\"email_2\")\nkbmg_hash_reversed.printSchema()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:02:37+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "root\n |-- fcid: string (nullable = true)\n |-- twitter_2: string (nullable = true)\n |-- phone_2: string (nullable = true)\n |-- email_2: string (nullable = true)\n\n\u001b[1m\u001b[34mhashes\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [plaintext: string, md5: string]\n\u001b[1m\u001b[34mkbmg_hash_reversed\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter_2: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=104",
+              "$$hashKey": "object:3144"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615370785548_981701577",
+      "id": "paragraph_1615370785548_981701577",
+      "dateCreated": "2021-03-10T10:06:25+0000",
+      "dateStarted": "2021-03-10T11:02:37+0000",
+      "dateFinished": "2021-03-10T11:02:40+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2566"
+    },
+    {
+      "text": "kbmg_hash_reversed.show(100, truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:02:56+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=105",
+              "$$hashKey": "object:3411"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=106",
+              "$$hashKey": "object:3412"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=107",
+              "$$hashKey": "object:3413"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=108",
+              "$$hashKey": "object:3414"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615371933624_-634354714",
+      "id": "paragraph_1615371933624_-634354714",
+      "dateCreated": "2021-03-10T10:25:33+0000",
+      "dateStarted": "2021-03-10T11:02:56+0000",
+      "dateFinished": "2021-03-10T11:13:02+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2567",
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "+--------------------------------+-----------------------------------+----------+-----------------------------+\n|fcid                            |twitter_2                          |phone_2   |email_2                      |\n+--------------------------------+-----------------------------------+----------+-----------------------------+\n|e7523d3a4f054392a1a5ce69dfb5ace4|null                               |9156334605|val_22_track@ymail.com       |\n|36bc0530346b4298a1a55ba72b532b73|null                               |3619350081|thomasgloria.1951@gmail.com  |\n|eecc1b5f04b4487180afc1528b3fd84f|null                               |7013897555|ashlie.nickol@yahoo.com      |\n|e3f68afb07cd4e51be529659a8e923e0|https://twitter.com/yoshtov        |6232024910|packerfan2243@cox.net        |\n|448a0fa63bf2438392adc3ac8a1be4ad|https://twitter.com/yoshtov        |6232024910|packerfan2243@cox.net        |\n|b9da256c11864d2ea72db1eae84773ec|https://twitter.com/yoshtov        |6232024910|packerfan2243@cox.net        |\n|ab4f26b430594ea4b6b60f76b4e3bd36|null                               |7859794718|sbonner@usd497.org           |\n|a1b51c76e53b43ec8a969dd6351c0f04|https://twitter.com/anbemartinez   |2088673670|anbemartinez@gmail.com       |\n|31abb5ff80454162b980220d326b72f2|null                               |9492412812|llemn@aol.com                |\n|52a86f4797a945f2b4a6eaa6dfcfa1f2|null                               |5167650856|patcummings0505@gmail.com    |\n|8a0333ea88444b3a85f1e23e676da19d|null                               |null      |cathairheaven@yahoo.com      |\n|cafcce1ca3d544e8ab340b2b20599c8c|null                               |null      |pablackburn1@gmail.com       |\n|ebb105d476924bc7a4f9860752696ff6|null                               |3012689658|theschmidt4@verizon.net      |\n|4e82b1c1023a481a8f6e78b403c85958|null                               |3012689658|theschmidt4@verizon.net      |\n|cd470b10bdb348cf81929f74880571fa|https://twitter.com/danired11      |null      |danicajanae10@gmail.com      |\n|8dcc63cef5d4402e89e69108ebeea7ec|null                               |null      |rangerd8@aol.com             |\n|97a924feea0845f5b52aaace36c9d216|null                               |null      |bradk9907@yahoo.com          |\n|3f19e897eafc44cb9ee3ed7b7bbc4dab|null                               |null      |neggink@aol.com              |\n|2b2c4da42b224e4d92f975ce2de9d4ad|https://twitter.com/10Andrii       |5709569574|jsolonoski@hotmail.com       |\n|236707ea0eff464cb856199af57022c0|null                               |null      |pope34@aol.com               |\n|6181a52f1d5446f7a3a57300d88e13ef|https://twitter.com/mommy_mouth09  |null      |carriemoor@hotmail.com       |\n|a6747a5434414d04918f24b1d7b0d656|null                               |null      |thompson2644@yahoo.com       |\n|febdac4d9e2a4052a01e9e76aac3b56a|null                               |null      |mmeinecke@email.com          |\n|8302a2cbde5a4b80978bfbfbe6d18a56|null                               |null      |hotsause2407@gmail.com       |\n|629265330360410987ef3b518e5d0d74|null                               |null      |nonni_1@comcast.net          |\n|5431d1166e444c84b8aa414b9fe6bb63|null                               |null      |doulee888@yahoo.com          |\n|155687dbc2bc4674a955df4578dd33e1|https://twitter.com/reetasweeta    |null      |doulee888@yahoo.com          |\n|0033035dc31045c7baf06d8dfcb8abc1|null                               |5129092980|griicastillo@yahoo.com       |\n|204af281269b4831a81bf6a59f824ff6|null                               |5129092980|griicastillo@yahoo.com       |\n|56bf17404ec74844b8242a522ad1885e|null                               |null      |salasj2010@live.com          |\n|4e32b16ecc14447c98ff789b5a6616e8|null                               |null      |salasj2010@live.com          |\n|24af46b6334849099f2b7770c0922f3f|null                               |null      |dpet99t-a@live.com           |\n|44c3b1e39f5e448a8a5f44e9eb8ca560|null                               |null      |ibfeine@sbcglobal.net        |\n|ff65c50a2b194fb9b6d03457d98cbbd6|null                               |null      |katie.nordt@gmail.com        |\n|c3a21f72421240468b2c9e48025c949f|null                               |null      |postbrandon23@yahoo.com      |\n|eb2198e0b5f745e4a3ebe3290db8b92c|null                               |null      |gspiceyo@gmail.com           |\n|45d13c875d89490fa8aa35092bdb9ab3|null                               |5756506056|ccampos@aitkids.com          |\n|55f59c8d39644c10a619f85be717063f|null                               |null      |warelisa57@gmail.com         |\n|1a26ae9b414d4eca9f3f468fca45d69e|null                               |null      |aseefried47@hotmail.com      |\n|a09da72a40bd402bad72a1537e3881aa|null                               |null      |bsarensen@aol.com            |\n|fc64d9ca193d4f049d068091cf4b8b16|https://twitter.com/ChaseRickey    |null      |crrickey1@yahoo.com          |\n|0683fb4399084775942766433b65472e|https://twitter.com/chaserickey    |5135183090|crrickey1@yahoo.com          |\n|3101054643354755b24b27d2fae88a54|null                               |3013465651|zbrnmonday@yahoo.com         |\n|d29a76daf51a45b5a95b97e20b7d8849|null                               |null      |rlynn128@hotmail.com         |\n|1617f19de52d47c9b4ac5c5f62dbe71f|https://twitter.com/pamwsnider     |null      |jjsnider@skylineforming.com  |\n|11d5ee22750847bdaf2c99ea25fffda3|null                               |null      |casiano.diaz@flash.net       |\n|e6979a612efc4cf482896b1bdd07e1ff|null                               |7073150405|weboat@pacbell.net           |\n|3170cf485f074931b8d45e879e5659d2|null                               |6027223469|ash.smith221@gmail.com       |\n|f0ae5df107da4f7cb98558e243ac23fe|null                               |6027223469|ash.smith221@gmail.com       |\n|824e89b88d214e2b86c3c6a7c4a91fa4|null                               |null      |r_j_rodriguez@hotmail.com    |\n|98adc08ce3a04011bba58eb78aa10654|null                               |null      |rose.dunklin@aol.com         |\n|bf0bffb662954d069321961774ddd78c|null                               |9548182718|ladamo23@gmail.com           |\n|ee1f4f46936342e6b2c1e46b31a28883|null                               |null      |slj_hillcity@yahoo.com       |\n|194c67e3f3d74d5abf60655d3a266808|null                               |4056124366|evanjw@yahoo.com             |\n|440283ab03bd4acdb688a2bf03300722|null                               |null      |snackright@msn.com           |\n|59b4d26c39f142b6bae28c95d9a3d5c4|https://twitter.com/BettiePiluso   |5712766316|bpiluso@scowcroft.com        |\n|b8bb0b6ebec84c8b982b67c5f27a3fb4|https://twitter.com/BettiePiluso   |null      |bpiluso@scowcroft.com        |\n|c53fa2b8500e4a93b0cc7a47a58f4297|null                               |null      |bailagentbob@aol.com         |\n|9eb927000dd74d88a4bf852c7d2c1210|null                               |null      |cossalman@mashell.com        |\n|7b7ddf47747c45728a0b76a07e317ed2|null                               |3155297631|adates@gmail.com             |\n|b5d173fef5614a16a9de3c12abbd9fda|null                               |null      |consultjwb@yahoo.com         |\n|3080a979d70346f299631b3f14b7101a|https://twitter.com/endellb        |null      |endell@gmail.com             |\n|5fd56021d3714d3a8cc4752b66ba238f|null                               |null      |navedo77@gmail.com           |\n|4613d5d9f1864993bec53c0a871554a6|null                               |null      |jleonard@wk.net              |\n|155c5e4322de4a6b96945abf488433a8|null                               |null      |dannysimon@comcast.net       |\n|8de3eea7ad83489cb2413a794be64151|null                               |null      |jb0527943@gmail.com          |\n|6631efe4ef6145189d132827a3528ef9|null                               |null      |cstaubjr@aol.com             |\n|e608baeedb5241f88b85224bc9b43b22|https://twitter.com/PDOZA          |null      |nsmith@satx.rr.com           |\n|cf2f9caec7664314ab7ebba1fb4a17b8|null                               |5408349147|skychavez@live.com           |\n|54284c13ee5e4c279180c5f1b1b8a9a4|null                               |null      |dianewilliams@centurylink.net|\n|60aaef296d364ed59663fd406a692dab|null                               |null      |lindasalvarrey@yahoo.com     |\n|63b91e2e7a694f9bbc715965750ad5bc|null                               |null      |lindasalvarrey@yahoo.com     |\n|7bcb982c46f647e8b09858a69d895e2e|null                               |null      |ciciray8sushi@gmail.com      |\n|b26473c59e9e4a99a585332f4c8fe221|https://twitter.com/MichaelFiedler2|null      |fiedlerdude90@hotmail.com    |\n|4010599a0bee4539841ed7f672189c70|null                               |null      |bontoonit@hotmail.com        |\n|fd7b84c4acbd4d0e9ba5940d3ea6f531|null                               |2144546614|amandhillon@prodigy.net      |\n|84aadeb5c4154c2dbe659bb85d3f43c2|null                               |null      |shopper338784@venda.com      |\n|2ae2c1bbbbc54b6ba08d88e0253c03b1|https://twitter.com/wescarpenter3  |2532301304|ewok242@comcast.net          |\n|9f375c5e959f42ccbb497ade230fba36|https://twitter.com/TUSMOLLU       |8166125148|djohnson2572@worldnet.att.net|\n|cd1b2e4c53644ecdb5094026ac6a0abd|null                               |3212432163|ebyczek@aol.com              |\n|7c5604592a7c4d0d8eed4573911fc43c|null                               |null      |jhawthorne33@cox.net         |\n|7e3e8ff388c841b2bfc58b7d0472ddf4|null                               |null      |christopherhauser@snet.net   |\n|ad35b22e0cdf43d3b5abe9d1c5a839c0|null                               |null      |tifmabey@icloud.com          |\n|47c8fd41b39d411f86b985cf932c4694|null                               |null      |tifmabey@icloud.com          |\n|a407dcf47619461598836a05dcb1d815|null                               |9193496600|bhbunn04@aol.com             |\n|2b437bcbd1b94c56915aff68e8db9b9e|null                               |8157906446|tpandkyle@sbcglobal.net      |\n|d8ac1d4b63ad4863a0373ed66ddc7db8|null                               |null      |lefteye04@yahoo.com          |\n|628c0c7d71ea4d9783a5f89c01e1f886|null                               |8589458466|bacarton@gmail.com           |\n|8fe4ed37b1534add905170ec6ed225a8|https://twitter.com/JadeShepherd15 |null      |cjadeshep@hotmail.com        |\n|37d0e7b4cd214ee1bc09e48c7c291f7d|https://twitter.com/jrubioNC       |9085103477|mwines68@netscape.net        |\n|31949e4bab1c40b79a928d8bc5419f5a|null                               |null      |dtomlin1@gmail.com           |\n|911f0433bdaf447fa9efecd68e67d663|null                               |null      |kristamcclenahan@aol.com     |\n|92616ad10c4f4334b452479c916775be|https://twitter.com/candersonbrown |7703673953|cabrown40@aol.com            |\n|7c08b298186f4ea9bb5612b5365416e7|null                               |null      |walter@wbmandell.com         |\n|7c323dfb68f243bcb97e40b29ec2357c|null                               |null      |cyim07@gmail.com             |\n|9fa22045ab9e406e93e70d11fdcc145d|null                               |9086552227|cyim07@gmail.com             |\n|7e66e822edb54d54bff0d805f324677d|https://twitter.com/QueenBizInCali |7072068306|etekeste@yahoo.com           |\n|e27d561ff2414ce39f0fed0d590c66d8|https://twitter.com/bb_tekeste     |2025491063|etekeste@yahoo.com           |\n|88ac3af3630b4b918762533abd8a777e|https://twitter.com/O_DAWG         |null      |lilotismpg@yahoo.com         |\n|716fc9ba01b2464194487decaf74d521|null                               |null      |hotdog1113@texoma.net        |\n+--------------------------------+-----------------------------------+----------+-----------------------------+\nonly showing top 100 rows\n\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "val combined_df = infutor.union(kbmg_hash_reversed)\nval combined_df_grouped = combined_df.groupBy(\"fcid\").agg(collect_list(\"twitter_2\"), collect_list(\"phone_2\"), collect_list(\"email_2\")).withColumn(\"twitter\",col(\"collect_list(twitter_2)\").getItem(0)).withColumn(\"phone_1\",col(\"collect_list(phone_2)\").getItem(0)).withColumn(\"email_1\",col(\"collect_list(email_2)\").getItem(0)).select(\"fcid\",\"twitter\",\"phone_1\",\"email_1\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:13:15+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34mcombined_df\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [fcid: string, twitter_2: string ... 2 more fields]\n\u001b[1m\u001b[34mcombined_df_grouped\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615368551819_391845499",
+      "id": "paragraph_1615368551819_391845499",
+      "dateCreated": "2021-03-10T09:29:11+0000",
+      "dateStarted": "2021-03-10T11:13:15+0000",
+      "dateFinished": "2021-03-10T11:13:16+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2568"
+    },
+    {
+      "text": "val socials_full = socials_us.union(combined_df_grouped)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:13:19+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34msocials_full\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.Dataset[org.apache.spark.sql.Row]\u001b[0m = [fcid: string, twitter: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615369053037_-1449515514",
+      "id": "paragraph_1615369053037_-1449515514",
+      "dateCreated": "2021-03-10T09:37:33+0000",
+      "dateStarted": "2021-03-10T11:13:19+0000",
+      "dateFinished": "2021-03-10T11:13:19+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2569"
+    },
+    {
+      "text": "val socials_full_grouped = socials_full.groupBy(\"fcid\").agg(collect_list(\"twitter\"), collect_list(\"phone_1\"), collect_list(\"email_1\")).withColumn(\"twitter\",col(\"collect_list(twitter)\").getItem(0)).withColumn(\"phone\",col(\"collect_list(phone_1)\").getItem(0)).withColumn(\"email\",col(\"collect_list(email_1)\").getItem(0)).select(\"fcid\",\"twitter\",\"phone\",\"email\")",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:13:22+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "\u001b[1m\u001b[34msocials_full_grouped\u001b[0m: \u001b[1m\u001b[32morg.apache.spark.sql.DataFrame\u001b[0m = [fcid: string, twitter: string ... 2 more fields]\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615369219692_-1669309211",
+      "id": "paragraph_1615369219692_-1669309211",
+      "dateCreated": "2021-03-10T09:40:19+0000",
+      "dateStarted": "2021-03-10T11:13:22+0000",
+      "dateFinished": "2021-03-10T11:13:22+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:2570"
+    },
+    {
+      "text": "socials_full_grouped.show(100, truncate=false)",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:13:25+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "SPARK JOB",
+          "tooltip": "View in Spark web UI",
+          "group": "spark",
+          "values": [
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=109",
+              "$$hashKey": "object:4079"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=110",
+              "$$hashKey": "object:4080"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=111",
+              "$$hashKey": "object:4081"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=112",
+              "$$hashKey": "object:4082"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=113",
+              "$$hashKey": "object:4083"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=114",
+              "$$hashKey": "object:4084"
+            },
+            {
+              "jobUrl": "http://ip-10-1-35-254.ec2.internal:4040/jobs/job?id=115",
+              "$$hashKey": "object:4085"
+            }
+          ],
+          "interpreterSettingId": "spark"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615369514887_-1359914251",
+      "id": "paragraph_1615369514887_-1359914251",
+      "dateCreated": "2021-03-10T09:45:14+0000",
+      "dateStarted": "2021-03-10T11:13:25+0000",
+      "dateFinished": "2021-03-10T10:56:08+0000",
+      "status": "RUNNING",
+      "$$hashKey": "object:2571"
+    },
+    {
+      "text": "socials_full_grouped.count()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:13:34+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615369528331_-1267040960",
+      "id": "paragraph_1615369528331_-1267040960",
+      "dateCreated": "2021-03-10T09:45:28+0000",
+      "dateStarted": "2021-03-10T11:13:34+0000",
+      "dateFinished": "2021-03-10T09:56:43+0000",
+      "status": "PENDING",
+      "$$hashKey": "object:2572"
+    },
+    {
+      "text": "socials_full_grouped.where(col(\"twitter\").isNotNull).count()",
+      "user": "anonymous",
+      "dateUpdated": "2021-03-10T11:14:12+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615369556980_893615190",
+      "id": "paragraph_1615369556980_893615190",
+      "dateCreated": "2021-03-10T09:45:56+0000",
+      "status": "PENDING",
+      "$$hashKey": "object:2573"
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615374852630_-1934518448",
+      "id": "paragraph_1615374852630_-1934518448",
+      "dateCreated": "2021-03-10T11:14:12+0000",
+      "status": "PENDING",
+      "focus": true,
+      "$$hashKey": "object:3925",
+      "text": "import org.apache.spark.sql.types.FloatType\nval mapping = spark.read.csv(\"s3://fullcontact-enrichment/pitneybowes/20210210sovrn/\").toDF(\"fcid\",\"street_address\",\"city\",\"state\",\"zip_code\",\"country\",\"precision_code\",\"pb_key\",\"first_name\",\"last_name\",\"address_public\",\"name_public\",\"address_belief\",\"name_belief\")\n\nval pb_mapping = mapping.withColumn(\"address_belief\", 'address_belief.cast(FloatType)).withColumn(\"name_belief\", 'name_belief.cast(FloatType)).withColumnRenamed(\"fcid\", \"pb_fcid\").filter('address_belief > 0.89 && 'name_belief > 0.89).select('pb_fcid, 'pb_key as \"pbkey\", 'name_belief).groupBy('pb_fcid).agg(collect_set(struct(\"name_belief\",\"pbkey\")) as \"key_belief\").select('pb_fcid, sort_array('key_belief, false).getItem(0).as(\"one_key_belief\")(\"pbkey\") as \"pbkey\").distinct\n\nval combined_df_pbkey = socials_full_grouped.join(pb_mapping, socials_full_grouped(\"fcid\")===pb_mapping(\"pb_fcid\"),\"left\").drop(\"pb_fcid\")",
+      "dateUpdated": "2021-03-10T11:15:51+0000"
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615374951762_2029399788",
+      "id": "paragraph_1615374951762_2029399788",
+      "dateCreated": "2021-03-10T11:15:51+0000",
+      "status": "PENDING",
+      "focus": true,
+      "$$hashKey": "object:4010",
+      "text": "combined_df_pbkey.write.mode(\"overwrite\").option(\"compression\", \"gzip\").option(\"header\", \"true\").option(\"escape\", \"\\\"\").csv(\"s3://fullcontact-dataops/datasets/precisely/socials/20210310/input/with_pbkey/\")",
+      "dateUpdated": "2021-03-10T11:18:21+0000"
+    },
+    {
+      "user": "anonymous",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615375101243_2072119998",
+      "id": "paragraph_1615375101243_2072119998",
+      "dateCreated": "2021-03-10T11:18:21+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:4117"
+    }
+  ],
+  "name": "TMobile-Socials-New-Approach-2021-March-10",
+  "id": "2G1G98AW4",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview1",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/TMobile-Socials-New-Approach-2021-March-10"
+}
